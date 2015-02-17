@@ -1,0 +1,76 @@
+# ---WiseMan CAx---
+# This is a mix of few .Htaccess files -> is used as a template for configuration as appropriate!
+# Това е комбинация от няколко .htaccess файла -> Използва се като шаблон за конфигуриране според случая!
+
+IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
+
+<Limit GET POST>
+order deny,allow
+deny from all
+allow from all
+
+</Limit>
+<Limit PUT DELETE>
+order deny,allow
+deny from all
+</Limit>
+
+AuthName www.wisemancax.com
+AuthUserFile /www/wisemancax.com/www/root/_vti_pvt/service.pwd
+AuthGroupFile /www/wisemancax.com/www/root/_vti_pvt/service.grp
+
+###### Title: 200 - which indicates the server has found the page (url) you requested, and here it is;
+ErrorDocument 200 http://www.wisemancax.com/Errors/200.php
+###### Title: 301 - the page you requested has permanently moved to a new URL - so I'll give you the new URL content;
+ErrorDocument 301 http://www.wisemancax.com/Errors/301.php
+###### Title: 302 - the page you requested has temporarily moved to a new URL - so I'll give you the new URL content;
+ErrorDocument 302 http://www.wisemancax.com/Errors/302.php
+ErrorDocument 400 http://www.wisemancax.com/Errors/400.php
+ErrorDocument 401 http://www.wisemancax.com/Errors/401.php
+ErrorDocument 402 http://www.wisemancax.com/Errors/402.php
+ErrorDocument 403 http://www.wisemancax.com/Errors/403.php
+###### Title: 404 - The page you requested can't be found, I haven't got a clue where it could be, no one told me about that page, so sod off and guess again.
+ErrorDocument 404 http://www.wisemancax.com/Errors/404.php
+###### Title: 500 Internal Server Error
+ErrorDocument 500 http://www.wisemancax.com/Errors/500.php
+
+AddType application/x-httpd-php .htm
+
+Options -Indexes FollowSymLinks MultiViews
+
+############################################
+## enable rewrites
+
+DirectoryIndex index.htm index.html index.shtml index.cgi index.php index.pl mypage.pl index.wml 
+RewriteEngine on
+
+############################################
+## redirect
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php?prado_uri=$1&%{QUERY_STRING} [L]
+
+RewriteCond %{HTTP_HOST} ^4iftebanq\.com$ [NC]
+RewriteCond %{HTTP_HOST} ^www.4iftebanq.com$
+## RewriteRule ^/?$ "http\:\/\/www\.wisemancax\.com\/e-com\/" [R=301,L]
+RewriteRule ^/?$ "http\:\/\/www\.wisemancax\.com\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^wisemancax.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www.wisemancax.com$
+## RewriteRule ^/?$ "http\:\/\/www\.wisemancax\.com\/e-com\/" [R=301,L]
+RewriteRule ^/?$ "http\:\/\/www\.wisemancax\.com\/" [R=301,L]
+
+############################################
+## By default allow all access
+
+    Order allow,deny
+    Allow from all
+
+###########################################
+## Deny access to release notes to prevent disclosure of the installed WiSeMan CAx version
+
+    <Files RELEASE_NOTES_WMC.txt>
+        order allow,deny
+        deny from all
+    </Files>

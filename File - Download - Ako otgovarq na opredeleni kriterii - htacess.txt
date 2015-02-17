@@ -1,0 +1,72 @@
+Въпрос:
+
+Има ли начин линка да продължава са сочи към /test.zip , но при определени условия юзъра да даунлоудва друг файл, примерно /some_dir/test.zip ? 
+Същото трябва да работи и при директно искане на файла, примерно си пейства в адрес бар http://domain.com/test.zip , но сваля /some_dir/test.zip 
+
+===========
+
+Отговор:
+
+1. Забраняваш директен http достъп до zip файла: 
+1.1 Създаваш нова директория (например /data) 
+1.2 Преместваш zip файла в нея 
+1.3. Забраняваш достъп до нея като: 
+Създаваш нов .htaccess файл в нея, със съдържание "deny from all" (без кавичките) 
+1.4. Така в новата директория трябва да има два файла (test.zip и .htaccess) 
+
+2. Правиш пренасочване на стария URL на zip файла към нов php файл чрез .htaccess: 
+ако преди zip-ът се е казвал test.zip и е бил във root директорията на сайта, примерен redirect във .htaccess би изглеждал така: 
+
+Redirect 301 test.zip test.php 
+
+Тоест създаваш .htaccess файл със това съдържание във папката където беше test.zip преди. 
+
+3. Правиш нов файл test.php и във него си правиш проверките и логиките: 
+
+<?php 
+if ( /* условията при които те могат да свалят файла */ ) { 
+
+header('Content-Type: application/octet-stream'); 
+header('Content-Disposition: attachment; filename="./data/test.zip"'); 
+header('Content-Transfer-Encoding: binary'); 
+
+readfile('./data/test.zip'); 
+
+} 
+
+else { 
+//тук пишеш какво да стане ако нямат право да го свалят. 
+} 
+
+?> 
+
+Не съм го тествал, но би трябвало да работи.
+
+
+EDIT: .zip може да се добави като изпълним към уеб сървъра също и чрез .htaccess ако това е позволено (не препоръчвам този метод). В .htaccess добави следния ред: 
+AddType application/x-httpd-php .zip 
+
+
+EDIT 2: 
+Не знам дали header-те, които копирах от по-горе ще работят, но ако не стане, пробвай с тези: 
+
+header("Pragma: public"); 
+header("Content-Type: application/force-download"); 
+header("Content-type: application/zip"); 
+header('Content-length: '.filesize('./data/test.zip')); 
+header("Content-disposition: attachment; filename=".basename('./data/test.zip')); 
+readfile('./data/test.zip'); 
+
+Това би създало проблем, където вместо .zip, браузърът записва файлът със разширение .php. Решението би било mod_rewrite, където вместо .php браузърът ще вижда .zip 
+
+За целта, триеш оня ред "Redirect 301 test.zip test.php" и на негово място слагаш: 
+
+<IfModule mod_rewrite.c> 
+RewriteEngine on 
+RewriteBase / 
+RewriteRule ^([^/]*)\.zip$ $1.php?%{QUERY_STRING} [NC] 
+</IfModule> 
+
+После зареждаш URL-а на zip-a и би трябвало да се изпълни .php файла. 
+
+Ако ти извади грешка 404 или 500 значи има проблем с mod_rewrite.

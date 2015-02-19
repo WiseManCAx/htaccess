@@ -1,0 +1,19 @@
+Alias /wordpress/ "/opt/bitnami/apps/wordpress/htdocs/"
+Alias /wordpress "/opt/bitnami/apps/wordpress/htdocs"
+<Directory "/opt/bitnami/apps/wordpress/htdocs">
+Options Indexes MultiViews +FollowSymLinks
+AllowOverride All
+<IfVersion < 2.3 >
+Order allow,deny
+Allow from all
+</IfVersion>
+<IfVersion >= 2.3>
+Require all granted
+</IfVersion>
+# RewriteEngine On
+# RewriteBase /wordpress/
+# RewriteRule ^index\.php$ - [L]
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule . /wordpress/index.php [L]
+</Directory>

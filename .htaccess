@@ -1,0 +1,22 @@
+# replace 3dwebdesign.org with your website homepage
+RedirectMatch 301 /index.php/(.*) http://3dwebdesign.org/$1
+
+ErrorDocument 404 http://3dwebdesign.org/
+
+# Note: Having a .htaccess prevents users from directly
+# accessing the files in your data folder
+deny from all
+
+# A7200 is 20 minutes - 7200 seconds cache
+ExpiresActive On
+ExpiresByType text/html "A7200"
+ExpiresByType text/javascript "A604800"
+ExpiresByType text/css "A604800"
+ExpiresByType image/x-icon "A31536000"
+ExpiresByType image/gif "A604800"
+ExpiresByType image/jpg "A604800"
+ExpiresByType image/jpeg "A604800"
+ExpiresByType image/png "A604800"
+ExpiresByType application/x-Shockwave-Flash "A604800"
+Header set Cache-Control "must-revalidate"
+FileETag none
